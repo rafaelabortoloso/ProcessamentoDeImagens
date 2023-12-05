@@ -9,6 +9,7 @@ import AritmeticOpertions from '../../components/AritmeticOperations'
 import LogicOperations from '../../components/LogicOperations'
 import HistogramComponent from '../../components/Histogram'
 import EqualizedHistogramComponent from '../../components/EqualizedHistogram'
+import MorphologicalOperations from '../../components/MorphologicalOperations'
 
 const ImageProcessPage = () => {
   const [firstImage, setFirstImage] = useState<ImageData | undefined>()
@@ -66,6 +67,12 @@ const ImageProcessPage = () => {
 
           <Box sx={{ padding: (theme) => theme.spacing(3) }}>
             <EqualizedHistogramComponent image={firstImage} />
+          </Box>
+        </Box>
+
+        <Box display='flex'>
+          <Box sx={{ padding: (theme) => theme.spacing(3) }}>
+            <MorphologicalOperations image={firstImage} setResultImage={setResultImage} />
           </Box>
         </Box>
       </Box>

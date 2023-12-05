@@ -382,3 +382,102 @@ export const toConsSmoothing = (image: ImageData) => {
 
   return new ImageData(result, width, height)
 }
+
+export const dilation = (image: ImageData) => {
+  const { width, height, data } = image;
+  const result = new Uint8ClampedArray(data.length);
+
+  const kernel = [
+    [1, 1, 1],
+    [1, 1, 1],
+    [1, 1, 1],
+  ];
+
+  const kernelWidth = kernel[0].length;
+  const kernelHeight = kernel.length;
+  const halfKernelWidth = Math.floor(kernelWidth / 2);
+  const halfKernelHeight = Math.floor(kernelHeight / 2);
+
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      let maxPixelValue = 0;
+
+      for (let ky = 0; ky < kernelHeight; ky++) {
+        for (let kx = 0; kx < kernelWidth; kx++) {
+          const imageX = x + kx - halfKernelWidth;
+          const imageY = y + ky - halfKernelHeight;
+
+          if (imageX >= 0 && imageX < width && imageY >= 0 && imageY < height) {
+            const kernelValue = kernel[ky][kx];
+            const imageIndex = (imageY * width + imageX) * 4;
+
+            const pixelValue = data[imageIndex];
+
+            if (kernelValue && pixelValue > maxPixelValue) {
+              maxPixelValue = pixelValue;
+            }
+          }
+        }
+      }
+
+      const currentIndex = (y * width + x) * 4;
+
+      result[currentIndex] = maxPixelValue;
+      result[currentIndex + 1] = maxPixelValue;
+      result[currentIndex + 2] = maxPixelValue;
+      result[currentIndex + 3] = 255;
+    }
+  }
+
+  return new ImageData(result, width, height);
+};
+
+export const erosion = (image: ImageData) => {
+  const { width, height, data } = image;
+  const result = new Uint8ClampedArray(data.length);
+
+  const kernel = [
+    [1, 1, 1],
+    [1, 1, 1],
+    [1, 1, 1],
+  ];
+
+  const kernelWidth = kernel[0].length;
+  const kernelHeight = kernel.length;
+  const halfKernelWidth = Math.floor(kernelWidth / 2);
+  const halfKernelHeight = Math.floor(kernelHeight / 2);
+
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      let minPixelValue = 255; 
+
+      for (let ky = 0; ky < kernelHeight; ky++) {
+        for (let kx = 0; kx < kernelWidth; kx++) {
+          const imageX = x + kx - halfKernelWidth;
+          const imageY = y + ky - halfKernelHeight;
+
+          if (imageX >= 0 && imageX < width && imageY >= 0 && imageY < height) {
+            const kernelValue = kernel[ky][kx];
+            const imageIndex = (imageY * width + imageX) * 4;
+
+            const pixelValue = data[imageIndex];
+
+            if (kernelValue && pixelValue < minPixelValue) {
+              minPixelValue = pixelValue;
+            }
+          }
+        }
+      }
+
+      const currentIndex = (y * width + x) * 4;
+
+      result[currentIndex] = minPixelValue;
+      result[currentIndex + 1] = minPixelValue;
+      result[currentIndex + 2] = minPixelValue;
+      result[currentIndex + 3] = 255;
+    }
+  }
+
+  return new ImageData(result, width, height);
+};
+

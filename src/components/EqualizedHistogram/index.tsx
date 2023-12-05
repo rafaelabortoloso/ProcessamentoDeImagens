@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { generateHistogram, equalizeHistogram } from '../../services/histogram';
+import { generateHistogram, equalizeHistogram, equalizeImage } from '../../services/histogram';
 import { Chart } from 'chart.js/auto';
 import { Button } from '@mui/material';
+import ResultImageModal from '../ResultImageModal';
 
 interface EqualizedHistogramProps {
     image?: ImageData;
@@ -9,12 +10,17 @@ interface EqualizedHistogramProps {
 
 const EqualizedHistogramComponent: React.FC<EqualizedHistogramProps> = ({ image }) => {
     const [equalizedHistogram, setEqualizedHistogram] = useState<number[] | null>(null);
+    const [showModal, setShowModal] = useState<boolean>(false);
+    const [equalizedImage, setEqualizedImage] = useState<ImageData | null>(null);
 
     useEffect(() => {
         if (image) {
             const histogram = generateHistogram(image);
             const equalized = equalizeHistogram(histogram);
             setEqualizedHistogram(equalized);
+
+            const newEqualizedImage = equalizeImage(image, equalized);
+            setEqualizedImage(newEqualizedImage);
         }
     }, [image]);
 
@@ -50,6 +56,7 @@ const EqualizedHistogramComponent: React.FC<EqualizedHistogramProps> = ({ image 
                 });
             }
         }
+        setShowModal(true);
     };
 
     return (
@@ -58,6 +65,12 @@ const EqualizedHistogramComponent: React.FC<EqualizedHistogramProps> = ({ image 
             <div>
                 <canvas id="equalized-histogram-chart" width='500px'></canvas>
             </div>
+            {showModal && equalizedImage && (
+                <ResultImageModal
+                    resultImage={equalizedImage}
+                    handleClose={() => setShowModal(false)}
+                />
+            )}
         </div>
     );
 };

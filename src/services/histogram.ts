@@ -24,3 +24,23 @@ export const equalizeHistogram = (histogram: number[]): number[] => {
 
     return equalizedHistogram;
 };
+
+export const equalizeImage = (imageData: ImageData, equalizedHistogram: number[]): ImageData => {
+    const equalizedImageData = new ImageData(imageData.width, imageData.height);
+    const pixels = imageData.data;
+    const equalizedPixels = equalizedImageData.data;
+
+    for (let i = 0; i < pixels.length; i += 4) {
+        const grayValue = Math.round((pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3);
+        const equalizedValue = equalizedHistogram[grayValue];
+
+        equalizedPixels[i] = equalizedValue;
+        equalizedPixels[i + 1] = equalizedValue;
+        equalizedPixels[i + 2] = equalizedValue;
+        equalizedPixels[i + 3] = 255;
+    }
+
+    return equalizedImageData;
+};
+
+
